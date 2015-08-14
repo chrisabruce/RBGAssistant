@@ -1,0 +1,6 @@
+## Interface: 60200
+## Title: RBG Assistant
+## Author: Chris Bruce
+## Notes: A tool for tracking RBG Teams
+## SavedVariables: RBGAssistant_DB
+RBGAssistant.lua
