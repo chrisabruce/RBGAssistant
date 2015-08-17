@@ -26,15 +26,24 @@ local shouldRecordSession = true
 local RBGAssistant = CreateFrame("Frame")
 
 function RBGAssistant:UpdateDB(winner)
+	shouldRecordSession = false
+	
 	local timestamp = RBGAssistant:GetCurrentTimestamp()
+	local status = RBGAssistant:GetBGStatus()
+	local leader = RBGAssistant:GetBGLeader()
+	local scores = RBGAssistant:GetBGScores()
+	local player = RBGAssistant:GetPlayer()
+	local isRated = IsRatedBattleground()
 
-	local bgInfo = {bgStatus = RBGAssistant:GetBGStatus(), 
-					winner = winner, 
-					leader = RBGAssistant:GetBGLeader(), 
-					scores = RBGAssistant:GetBGScores()}
+	local bgInfo = {bgStatus = status, 
+					winner = winner,
+					leader = leader,
+					scores = scores,
+					player = player,
+					isRated = isRated}
 
 	RBGAssistant_DB[timestamp] = bgInfo
-	shouldRecordSession = false
+	
 	print("RBG Assistant: battleground saved.")
 end
 
@@ -90,14 +99,22 @@ function RBGAssistant:GetBGLeader()
 			bgLeader = name
 			break
 		end
-		return bgLeader
 	end
+	return bgLeader
+end
+
+function RBGAssistant:GetPlayer()
+	local name, realm = UnitName("player")
+	if realm == nil then
+		realm = GetRealmName()
+	end
+	return name .. "-" .. realm
 end
 
 
 
 function RBGAssistant:OnEvent(self, event, ...)
-	print("UPDATE_BATTLEFIELD_SCORE")
+	--print("UPDATE_BATTLEFIELD_SCORE")
 
 	local winner = RBGAssistant:GetCurrentWinner()
 
@@ -113,4 +130,4 @@ end
 RBGAssistant:RegisterEvent("UPDATE_BATTLEFIELD_SCORE")
 
 RBGAssistant:SetScript("OnEvent", RBGAssistant.OnEvent)
-print("RBG Assistant Loaded 10")
+print("RBG Assistant Loaded version 1.2")
