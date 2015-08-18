@@ -25,17 +25,12 @@ local shouldRecordSession = true
 
 local RBGAssistant = CreateFrame("Frame")
 
-function RBGAssistant:UpdateDB(winner)
+function RBGAssistant:UpdateDB()
 	shouldRecordSession = false
 	
-	local timestamp = RBGAssistant:GetCurrentTimestamp()
-	local status = RBGAssistant:GetBGStatus()
-	local leader = RBGAssistant:GetBGLeader()
-	local scores = RBGAssistant:GetBGScores()
-	local player = RBGAssistant:GetPlayer()
-	local isRated = IsRatedBattleground()
+	local json = RBGAssistant:GetResultsJSON()
 
-	local bgInfo = {bgStatus = status, 
+	local bgInfo = {mapName = R, 
 					winner = winner,
 					leader = leader,
 					scores = scores,
@@ -45,6 +40,19 @@ function RBGAssistant:UpdateDB(winner)
 	RBGAssistant_DB[timestamp] = bgInfo
 	
 	print("RBG Assistant: battleground saved.")
+end
+
+function RBGAssistant:GetResultsJSON()
+	
+	local winner = RBGAssistant:GetCurrentWinner()
+	local timestamp = RBGAssistant:GetCurrentTimestamp()
+	local mapName = RBGAssistant:GetBGMapName()
+	local leader = RBGAssistant:GetBGLeader()
+	local scores = RBGAssistant:GetBGScoresJSON()
+	local player = RBGAssistant:GetPlayer()
+	local isRated = IsRatedBattleground()
+
+	local json = string.format('{"time": "%s", "map": "%s", "leader": "%s", "player": "%s", "is_rated": %s, "scores": %s}', timestamp, mapName, leader, player, isRated, scores)
 end
 
 function RBGAssistant:GetCurrentTimestamp()
@@ -57,38 +65,41 @@ end
 
 function RBGAssistant:GetCurrentWinner()
 	local winner = GetBattlefieldWinner()
-	local winnerName = nil
-
-	if winner == 0 then
-		winnerName = "Horde"
-	elseif winner == 1 then
-		winnerName = "Alliance"
-	end
-
-	return winnerName
+	return RBGAssistant:GetFactionName(winner)
 end
 
-function RBGAssistant:GetBGScores()
+function RBGAssistant:GetFactionName(f)
+	local faction
+	if f == 0 then
+		faction = "Horde"
+	elseif f == 1 then
+		faction = "Alliance"
+	end
+	return faction
+end
+
+function RBGAssistant:GetBGScoresJSON()
 	local numScores = GetNumBattlefieldScores()
 	local scores = {}
 
 	for i = 1, numScores do
 		local name, killingBlows, honorableKills, deaths, honorGained, faction, race, class, classToken, damageDone, healingDone, bgRating, ratingChange, preMatchMMR, mmrChange, talentSpec = GetBattlefieldScore(i)
-		scores[#scores + 1] = {name, killingBlows, honorableKills, deaths, honorGained, faction, race, class, classToken, damageDone, healingDone, bgRating, ratingChange, preMatchMMR, mmrChange, talentSpec}
+		
+		scores[#scores + 1] = string.format('{"name": "%s", "kb": %d, "hk": %d, "deaths": %d, "honor": %d, "faction": "%s", "race": "%s", "class": "%s", "damage": %d, "healing": %d, "bg_rating": %d, "bg_rating_change": %d, "pre_mmr": %d, "mmr_change": %d, "talent_spec": "%s"}', name, killingBlows, honorableKills, deaths, honorGained, RBGAssistant:GetFactionName(faction), race, class, damageDone, healingDone, bgRating, ratingChange, preMatchMMR, mmrChange, talentSpec}
 	end
-	return scores
+	return "[" .. table.concat(scrores, ", ") .. "]"
 end
 
-function RBGAssistant:GetBGStatus()
-	local bgStatus = {}
+function RBGAssistant:GetBGMapName()
+	local bgMapName
 	for i = 1, GetMaxBattlefieldID() do
-		status, mapName, instanceID, bracketMin, bracketMax, teamSize, registeredMatch = GetBattlefieldStatus(i)
+		local status, mapName, instanceID, bracketMin, bracketMax, teamSize, registeredMatch = GetBattlefieldStatus(i)
 		if status == "active" then
-			bgStatus = {status = status, mapName = mapName, instanceID = instanceID, bracketMin = bracketMin, bracketMax = bracketMax, teamSize = teamSize, registeredMatch = registeredMatch}
+			bgMapName = mapName
 			break
 		end
 	end
-	return bgStatus
+	return bgMapName
 end
 
 function RBGAssistant:GetBGLeader()
@@ -118,14 +129,13 @@ end
 
 function RBGAssistant:OnEvent(self, event, ...)
 	--print("UPDATE_BATTLEFIELD_SCORE")
-
-	local winner = RBGAssistant:GetCurrentWinner()
+	local winner = GetBattlefieldWinner()
 
 	if winner == nil then
 		shouldRecordSession = true
 	elseif shouldRecordSession == true then
 		--print("Winner Found")
-		RBGAssistant:UpdateDB(winner)
+		RBGAssistant:UpdateDB()
 	end
 end
 
