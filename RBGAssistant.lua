@@ -29,15 +29,7 @@ function RBGAssistant:UpdateDB()
 	shouldRecordSession = false
 	
 	local json = RBGAssistant:GetResultsJSON()
-
-	local bgInfo = {mapName = R, 
-					winner = winner,
-					leader = leader,
-					scores = scores,
-					player = player,
-					isRated = isRated}
-
-	RBGAssistant_DB[timestamp] = bgInfo
+	table.insert(RBGAssistant_DB, json)
 	
 	print("RBG Assistant: battleground saved.")
 end
