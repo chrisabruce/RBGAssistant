@@ -97,6 +97,9 @@ function RBGAssistant:GetBGLeader()
 		local name, rank = GetRaidRosterInfo(i)
 		if rank == 2 then
 			bgLeader = name
+			if not string.find(bgLeader, "-") then
+				bgLeader = bgLeader .. "-" .. GetRealmName()
+			end
 			break
 		end
 	end
@@ -130,4 +133,4 @@ end
 RBGAssistant:RegisterEvent("UPDATE_BATTLEFIELD_SCORE")
 
 RBGAssistant:SetScript("OnEvent", RBGAssistant.OnEvent)
-print("RBG Assistant Loaded version 1.2")
+print("RBG Assistant Loaded version 1.3")
