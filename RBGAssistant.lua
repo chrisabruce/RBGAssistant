@@ -44,7 +44,7 @@ function RBGAssistant:GetResultsJSON()
 	local player = RBGAssistant:GetPlayer()
 	local isRated = IsRatedBattleground()
 
-	local json = string.format('{"time": "%s", "map": "%s", "leader": "%s", "player": "%s", "is_rated": %s, "scores": %s}', timestamp, mapName, leader, player, isRated, scores)
+	local json = string.format("{time: %q, map: %q, leader: %q, player: %q, is_rated: %s, scores: %s}", timestamp, mapName, leader, player, isRated, scores)
 end
 
 function RBGAssistant:GetCurrentTimestamp()
@@ -70,16 +70,31 @@ function RBGAssistant:GetFactionName(f)
 	return faction
 end
 
+function RBGAssistant:GetFullName(name)
+	local fullname = name
+	if not string.find(name, "-") then
+		fullname = name .. "-" .. GetRealmName()
+	end
+	return fullname
+end
+
+
 function RBGAssistant:GetBGScoresJSON()
 	local numScores = GetNumBattlefieldScores()
 	local scores = {}
 
 	for i = 1, numScores do
 		local name, killingBlows, honorableKills, deaths, honorGained, faction, race, class, classToken, damageDone, healingDone, bgRating, ratingChange, preMatchMMR, mmrChange, talentSpec = GetBattlefieldScore(i)
+		name = RBGAssistant:GetFullName(name)
+		local factionName = RBGAssistant:GetFactionName(faction)
+
+		local score
+
 		
-		scores[#scores + 1] = string.format('{"name": "%s", "kb": %d, "hk": %d, "deaths": %d, "honor": %d, "faction": "%s", "race": "%s", "class": "%s", "damage": %d, "healing": %d, "bg_rating": %d, "bg_rating_change": %d, "pre_mmr": %d, "mmr_change": %d, "talent_spec": "%s"}', name, killingBlows, honorableKills, deaths, honorGained, RBGAssistant:GetFactionName(faction), race, class, damageDone, healingDone, bgRating, ratingChange, preMatchMMR, mmrChange, talentSpec}
+
+		scores[#scores + 1] = string.format("{name: %q, kb: %d, hk: %d, deaths: %d, honor: %d, faction: %q, race: %q, class: %q, damage: %d, healing: %d, bg_rating: %d, bg_rating_change: %d, pre_mmr: %d, mmr_change: %d, talent_spec: %q}", name, killingBlows, honorableKills, deaths, honorGained, factionName, race, class, damageDone, healingDone, bgRating, ratingChange, preMatchMMR, mmrChange, talentSpec)
 	end
-	return "[" .. table.concat(scrores, ", ") .. "]"
+	return "[" .. table.concat(scores, ", ") .. "]"
 end
 
 function RBGAssistant:GetBGMapName()
@@ -99,10 +114,7 @@ function RBGAssistant:GetBGLeader()
 	for i = 1, GetNumGroupMembers() do
 		local name, rank = GetRaidRosterInfo(i)
 		if rank == 2 then
-			bgLeader = name
-			if not string.find(bgLeader, "-") then
-				bgLeader = bgLeader .. "-" .. GetRealmName()
-			end
+			bgLeader = RBGAssistant:GetFullName(name)
 			break
 		end
 	end
