@@ -112,27 +112,23 @@ function RBGAssistant:GetBGScoresJSON()
 			talentSpec = "n/a"
 		end
 
-		local score = "{"
+		--score = score .. string.format("name: %q, ", name)
+		--score = score .. string.format("kb: %d, ", killingBlows)
+		--score = score .. string.format("hk: %d, ", honorableKills)
+		--score = score .. string.format("deaths: %d, ", deaths)
+		--score = score .. string.format("honor: %d, ", honorGained)
+		--score = score .. string.format("faction: %q, ", factionName)
+		--score = score .. string.format("race: %q, ", race)
+		--score = score .. string.format("class: %q, ", class)
+		--score = score .. string.format("damage: %d, ", damageDone)
+		--score = score .. string.format("healing: %d, ", healingDone)
+		--score = score .. string.format("bg_rating: %d, ", bgRating)
+		--score = score .. string.format("bg_rating_change: %d, ", ratingChange)
+		--score = score .. string.format("pre_mmr: %d,", preMatchMMR)
+		--score = score .. string.format("mmr_change: %d,", mmrChange)
+		--score = score .. string.format("talent_spec: %q}", talentSpec)
 
-		score = score .. string.format("name: %q, ", name)
-		score = score .. string.format("kb: %d, ", killingBlows)
-		score = score .. string.format("hk: %d, ", honorableKills)
-		score = score .. string.format("deaths: %d, ", deaths)
-		score = score .. string.format("honor: %d, ", honorGained)
-		score = score .. string.format("faction: %q, ", factionName)
-		score = score .. string.format("race: %q, ", race)
-		score = score .. string.format("class: %q, ", class)
-		score = score .. string.format("damage: %d, ", damageDone)
-		score = score .. string.format("healing: %d, ", healingDone)
-		score = score .. string.format("bg_rating: %d, ", bgRating)
-		score = score .. string.format("bg_rating_change: %d, ", ratingChange)
-		score = score .. string.format("pre_mmr: %d,", preMatchMMR)
-		score = score .. string.format("mmr_change: %d,", mmrChange)
-		score = score .. string.format("talent_spec: %q}", talentSpec)
-
-		
-
-		scores[#scores + 1] = score --string.format("{name: %q, kb: %d, hk: %d, deaths: %d, honor: %d, faction: %q, race: %q, class: %q, damage: %d, healing: %d, bg_rating: %d, bg_rating_change: %d, pre_mmr: %d, mmr_change: %d, talent_spec: %q}", name, killingBlows, honorableKills, deaths, honorGained, factionName, race, class, damageDone, healingDone, bgRating, ratingChange, preMatchMMR, mmrChange, talentSpec)
+		scores[#scores + 1] = string.format("{name: %q, kb: %d, hk: %d, deaths: %d, honor: %d, faction: %q, race: %q, class: %q, damage: %d, healing: %d, bg_rating: %d, bg_rating_change: %d, pre_mmr: %d, mmr_change: %d, talent_spec: %q}", name, killingBlows, honorableKills, deaths, honorGained, factionName, race, class, damageDone, healingDone, bgRating, ratingChange, preMatchMMR, mmrChange, talentSpec)
 	end
 	return "[" .. table.concat(scores, ", ") .. "]"
 end
