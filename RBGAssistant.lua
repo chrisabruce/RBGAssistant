@@ -35,16 +35,16 @@ function RBGAssistant:UpdateDB()
 end
 
 function RBGAssistant:GetResultsJSON()
-	
+	local scores = RBGAssistant:GetBGScoresJSON()
+	local leader = RBGAssistant:GetBGLeader()
 	local winner = RBGAssistant:GetCurrentWinner()
 	local timestamp = RBGAssistant:GetCurrentTimestamp()
 	local mapName = RBGAssistant:GetBGMapName()
-	local leader = RBGAssistant:GetBGLeader()
-	local scores = RBGAssistant:GetBGScoresJSON()
 	local player = RBGAssistant:GetPlayer()
 	local isRated = IsRatedBattleground()
 
-	local json = string.format("{time: %q, map: %q, leader: %q, player: %q, is_rated: %s, scores: %s}", timestamp, mapName, leader, player, isRated, scores)
+	return string.format("{time: %q, map: %q, leader: %q, player: %q, is_rated: %s, scores: %s}", timestamp, mapName, leader, player, RBGAssistant:BoolToString(isRated), scores)
+
 end
 
 function RBGAssistant:GetCurrentTimestamp()
@@ -78,6 +78,14 @@ function RBGAssistant:GetFullName(name)
 	return fullname
 end
 
+function RBGAssistant:BoolToString(b)
+	str = "false"
+	if (b == true) then
+		str = "true"
+	end
+	return str
+end
+
 
 function RBGAssistant:GetBGScoresJSON()
 	local numScores = GetNumBattlefieldScores()
@@ -88,11 +96,43 @@ function RBGAssistant:GetBGScoresJSON()
 		name = RBGAssistant:GetFullName(name)
 		local factionName = RBGAssistant:GetFactionName(faction)
 
-		local score
+		if factionName == nil then
+			factionName = "n/a"
+		end
+
+		if race == nil then
+			race = "n/a"
+		end
+
+		if class == nil then
+			class = "n/a"
+		end
+
+		if talentSpec == nil then
+			talentSpec = "n/a"
+		end
+
+		local score = "{"
+
+		score = score .. string.format("name: %q, ", name)
+		score = score .. string.format("kb: %d, ", killingBlows)
+		score = score .. string.format("hk: %d, ", honorableKills)
+		score = score .. string.format("deaths: %d, ", deaths)
+		score = score .. string.format("honor: %d, ", honorGained)
+		score = score .. string.format("faction: %q, ", factionName)
+		score = score .. string.format("race: %q, ", race)
+		score = score .. string.format("class: %q, ", class)
+		score = score .. string.format("damage: %d, ", damageDone)
+		score = score .. string.format("healing: %d, ", healingDone)
+		score = score .. string.format("bg_rating: %d, ", bgRating)
+		score = score .. string.format("bg_rating_change: %d, ", ratingChange)
+		score = score .. string.format("pre_mmr: %d,", preMatchMMR)
+		score = score .. string.format("mmr_change: %d,", mmrChange)
+		score = score .. string.format("talent_spec: %q}", talentSpec)
 
 		
 
-		scores[#scores + 1] = string.format("{name: %q, kb: %d, hk: %d, deaths: %d, honor: %d, faction: %q, race: %q, class: %q, damage: %d, healing: %d, bg_rating: %d, bg_rating_change: %d, pre_mmr: %d, mmr_change: %d, talent_spec: %q}", name, killingBlows, honorableKills, deaths, honorGained, factionName, race, class, damageDone, healingDone, bgRating, ratingChange, preMatchMMR, mmrChange, talentSpec)
+		scores[#scores + 1] = score --string.format("{name: %q, kb: %d, hk: %d, deaths: %d, honor: %d, faction: %q, race: %q, class: %q, damage: %d, healing: %d, bg_rating: %d, bg_rating_change: %d, pre_mmr: %d, mmr_change: %d, talent_spec: %q}", name, killingBlows, honorableKills, deaths, honorGained, factionName, race, class, damageDone, healingDone, bgRating, ratingChange, preMatchMMR, mmrChange, talentSpec)
 	end
 	return "[" .. table.concat(scores, ", ") .. "]"
 end
