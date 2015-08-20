@@ -43,7 +43,7 @@ function RBGAssistant:GetResultsJSON()
 	local player = RBGAssistant:GetPlayer()
 	local isRated = IsRatedBattleground()
 
-	return string.format("{time: %q, map: %q, leader: %q, player: %q, is_rated: %s, scores: %s}", timestamp, mapName, leader, player, RBGAssistant:BoolToString(isRated), scores)
+	return string.format("{time: %q, map: %q, winner: %q, leader: %q, player: %q, is_rated: %s, scores: %s}", timestamp, mapName, winner, leader, player, RBGAssistant:BoolToString(isRated), scores)
 
 end
 
