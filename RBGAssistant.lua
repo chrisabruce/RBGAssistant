@@ -43,7 +43,7 @@ function RBGAssistant:GetResultsJSON()
 	local player = RBGAssistant:GetPlayer()
 	local isRated = IsRatedBattleground()
 
-	return string.format("{time: %q, map: %q, winner: %q, leader: %q, player: %q, is_rated: %s, scores: %s}", timestamp, mapName, winner, leader, player, RBGAssistant:BoolToString(isRated), scores)
+	return string.format("{\"time\": %q, \"map\": %q, \"winner\": %q, \"leader\": %q, \"player\": %q, \"is_rated\": %s, \"scores\": %s}", timestamp, mapName, winner, leader, player, RBGAssistant:BoolToString(isRated), scores)
 
 end
 
@@ -128,7 +128,7 @@ function RBGAssistant:GetBGScoresJSON()
 		--score = score .. string.format("mmr_change: %d,", mmrChange)
 		--score = score .. string.format("talent_spec: %q}", talentSpec)
 
-		scores[#scores + 1] = string.format("{name: %q, kb: %d, hk: %d, deaths: %d, honor: %d, faction: %q, race: %q, class: %q, damage: %d, healing: %d, bg_rating: %d, bg_rating_change: %d, pre_mmr: %d, mmr_change: %d, talent_spec: %q}", name, killingBlows, honorableKills, deaths, honorGained, factionName, race, class, damageDone, healingDone, bgRating, ratingChange, preMatchMMR, mmrChange, talentSpec)
+		scores[#scores + 1] = string.format("{\"name\": %q, \"kb\": %d, \"hk\": %d, \"deaths\": %d, \"honor\": %d, \"faction\": %q, \"race\": %q, \"class\": %q, \"damage\": %d, \"healing\": %d, \"bg_rating\": %d, \"bg_rating_change\": %d, \"pre_mmr\": %d, \"mmr_change\": %d, \"talent_spec\": %q}", name, killingBlows, honorableKills, deaths, honorGained, factionName, race, class, damageDone, healingDone, bgRating, ratingChange, preMatchMMR, mmrChange, talentSpec)
 	end
 	return "[" .. table.concat(scores, ", ") .. "]"
 end
